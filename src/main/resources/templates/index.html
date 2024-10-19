@@ -7,11 +7,31 @@
 
     <title>Welcome</title>
     
+     <script>
+        function displayGreeting() {
+            // Get the current hour
+            var now = new Date();
+            var hours = now.getHours();
+
+            var name = "Kevin Dalling";  
+
+            // Determine if it's morning or afternoon
+            var greeting;
+            if (hours < 12) {
+                greeting = "Good morning, " + name + ", Welcome to COMP367.";
+            } else {
+                greeting = "Good afternoon, " + name + ", Welcome to COMP367.";
+            }
+
+            // Display the greeting in the HTML element
+            document.getElementById("greeting").innerHTML = greeting;
+        }
+    </script>
     
 </head>
-<body>
+<body onload="displayGreeting()">
     <div>
-        <p id="greeting">Welcome to COMP367</p>      
+        <p id="greeting"></p>      
      </div>
 
         </form>
