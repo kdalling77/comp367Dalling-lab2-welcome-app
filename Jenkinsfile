@@ -6,6 +6,11 @@ pipeline {
         maven "MAVEN3"
     }
 
+     environment {
+        DOCKER_CREDENTIALS_ID = 'my-docker-hub-credentials'  // ID for Docker Hub credentials in Jenkins
+        DOCKER_IMAGE_NAME = 'kdalling/welcome-app-image'  // Replace with your Docker Hub username and image name
+    }
+
     stages {
         
         
@@ -20,7 +25,7 @@ pipeline {
         
         
         
-        stage('Build') {
+        stage('Build Maven Project') {
             steps {
 
                 // Run Maven on a Windows agent.
@@ -39,5 +44,36 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker Login') {
+            steps {
+                // Log in to Docker Hub using credentials stored in Jenkins
+                script {
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                // Build the Docker image for the project
+                script {
+                    sh "docker build -t ${DOCKER_IMAGE_NAME} ."
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                // Push the Docker image to Docker Hub
+                script {
+                    sh "docker push ${DOCKER_IMAGE_NAME}"
+                }
+            }
+        }
+
+
     }
 }
